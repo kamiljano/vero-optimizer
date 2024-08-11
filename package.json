@@ -1,0 +1,17 @@
+{
+  "name": "vero-optimizer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.2.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.17.0"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.2"
+  }
+}
