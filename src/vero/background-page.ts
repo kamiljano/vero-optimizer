@@ -1,5 +1,6 @@
 import { Page } from 'puppeteer';
 import EditableDropdown from './editable-dropdown';
+import IncomePage from './income-page';
 
 export type Parish =
   | 'Civil Register'
@@ -12,6 +13,7 @@ export default class BackgroundPage {
   constructor(private readonly page: Page) {}
 
   private async getYearRadios() {
+    await this.page.waitForSelector('.FGFCBW label');
     const yearRadios = await this.page.$$('.FGFCBW label');
 
     if (!yearRadios.length) {
@@ -49,27 +51,27 @@ export default class BackgroundPage {
   }
 
   private getMunicipalityDropdown() {
-    return new EditableDropdown(this.page, 'Dn-k');
+    return EditableDropdown.get(this.page, 'Dn-k');
   }
 
   private getParishDropdown() {
-    return new EditableDropdown(this.page, 'Dn-l');
+    return EditableDropdown.get(this.page, 'Dn-l');
   }
 
   async setMunicipality(municipality: string) {
-    await this.getMunicipalityDropdown().select(municipality);
+    await this.getMunicipalityDropdown().then((e) => e.select(municipality));
   }
 
   async setParish(parish: Parish) {
-    await this.getParishDropdown().select(parish);
+    await this.getParishDropdown().then((e) => e.select(parish));
   }
 
   private getYearOfBirthDropdown() {
-    return new EditableDropdown(this.page, 'Dn-m');
+    return EditableDropdown.get(this.page, 'Dn-m');
   }
 
   async setYearOfBirth(year: number) {
-    await this.getYearOfBirthDropdown().select(year.toString());
+    await this.getYearOfBirthDropdown().then((e) => e.select(year.toString()));
   }
 
   async setSpouse() {
@@ -84,5 +86,6 @@ export default class BackgroundPage {
 
   async next() {
     await this.page.click('button#action_7');
+    return new IncomePage(this.page);
   }
 }

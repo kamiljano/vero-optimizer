@@ -11,5 +11,17 @@ import Calculator from './vero/calculator';
       yearOfBirth: 1989,
       spouse: true,
     },
+    income: {
+      pay: {
+        estimateForYear: 60000,
+        incomeReceived: 0,
+        withholdings: 0,
+      },
+      benefits: {
+        estimateForYear: 0,
+        incomeReceived: 0,
+        withholdings: 0,
+      },
+    },
   });
 })();
