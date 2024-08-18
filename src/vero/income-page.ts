@@ -1,5 +1,6 @@
 import { Page } from 'puppeteer';
 import Input from './input';
+import DeductionsPage from './deductions-page';
 
 export default class IncomePage {
   constructor(private readonly page: Page) {}
@@ -26,5 +27,10 @@ export default class IncomePage {
 
   async setBenefitsWithholdings(val: number) {
     await Input.get(this.page, 'Dn-n3').then((e) => e.set(val.toString()));
+  }
+
+  async next() {
+    await this.page.click('button#action_7');
+    return new DeductionsPage(this.page);
   }
 }

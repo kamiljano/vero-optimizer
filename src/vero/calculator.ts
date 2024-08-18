@@ -2,6 +2,8 @@ import puppeteer, { Page } from 'puppeteer';
 import BackgroundPage, { Parish } from './background-page';
 import { setTimeout } from 'node:timers/promises';
 import IncomePage from './income-page';
+import DeductionsPage from './deductions-page';
+import CalculationResult from './calculation-result';
 
 interface Background {
   taxYear: number;
@@ -27,9 +29,24 @@ interface Income {
   //todo: the rest
 }
 
+interface Deductions {
+  employmentPensionContributions: number;
+  tradeUnionMembershipFeesAndUnemploymentFundPayments: number;
+  commutingExpenses: number;
+  otherExpensesForTheProductionOfWageIncome: number;
+  unemploymentInsuranceContributions: number;
+  yelOrMyelPensionInsuranceContributions: number;
+  interestOnLoanForTheProductionOfIncome: number;
+  contributionsForVoluntaryPensionInsuranceOrLongTermSavingsContract: number;
+  otherExpensesForProductionOfCapitalIncome: number;
+
+  //todo: the rest
+}
+
 interface Calculation {
   background: Background;
   income: Income;
+  deductions: Deductions;
 }
 
 interface CalculatorProps {
@@ -60,23 +77,69 @@ export default class Calculator {
     await page.setBenefitsEstimateForYear(income.benefits.estimateForYear);
     await page.setBenefitsReceived(income.benefits.incomeReceived);
     await page.setBenefitsWithholdings(income.benefits.withholdings);
+    return page.next();
   }
 
-  async calculate(calculation: Calculation) {
+  private async calculateDeductions(
+    page: DeductionsPage,
+    deductions: Deductions,
+  ) {
+    await page.setEmploymentPensionContributions(
+      deductions.employmentPensionContributions,
+    );
+    await page.setTradeUnionMembershipFeesAndUnemploymentFundPayments(
+      deductions.tradeUnionMembershipFeesAndUnemploymentFundPayments,
+    );
+    await page.setCommutingExpenses(deductions.commutingExpenses);
+    await page.setOtherExpensesForTheProductionOfWageIncome(
+      deductions.otherExpensesForTheProductionOfWageIncome,
+    );
+    await page.setUnemploymentInsuranceContributions(
+      deductions.unemploymentInsuranceContributions,
+    );
+    await page.setYelOrMyelPensionInsuranceContributions(
+      deductions.yelOrMyelPensionInsuranceContributions,
+    );
+    await page.setInterestOnLoanForTheProductionOfIncome(
+      deductions.interestOnLoanForTheProductionOfIncome,
+    );
+    await page.setContributionsForVoluntaryPensionInsuranceOrLongTermSavingsContract(
+      deductions.contributionsForVoluntaryPensionInsuranceOrLongTermSavingsContract,
+    );
+    await page.setOtherExpensesForProductionOfCapitalIncome(
+      deductions.otherExpensesForProductionOfCapitalIncome,
+    );
+
+    return page.next();
+  }
+
+  async calculate(calculation: Calculation): Promise<CalculationResult> {
     const browser = await puppeteer.launch({ headless: this.props.headless });
-    const page = await browser.newPage();
-    await page.goto(
-      'https://avoinomavero.vero.fi/?Language=ENG&Link=IITTaxRateCalc',
-    );
 
-    const incomePage = await this.calculateBackground(
-      page,
-      calculation.background,
-    );
-    await this.calculateIncome(incomePage, calculation.income);
+    try {
+      const page = await browser.newPage();
+      await page.goto(
+        'https://avoinomavero.vero.fi/?Language=ENG&Link=IITTaxRateCalc',
+      );
 
-    await setTimeout(5000);
+      const incomePage = await this.calculateBackground(
+        page,
+        calculation.background,
+      );
 
-    await browser.close();
+      const deductionsPage = await this.calculateIncome(
+        incomePage,
+        calculation.income,
+      );
+
+      const resultPage = await this.calculateDeductions(
+        deductionsPage,
+        calculation.deductions,
+      );
+
+      return await resultPage.getCalculationResult();
+    } finally {
+      await browser.close();
+    }
   }
 }

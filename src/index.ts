@@ -1,8 +1,8 @@
 import Calculator from './vero/calculator';
 
 (async () => {
-  await new Calculator({
-    headless: false,
+  const result = await new Calculator({
+    headless: true,
   }).calculate({
     background: {
       taxYear: 2024,
@@ -23,5 +23,18 @@ import Calculator from './vero/calculator';
         withholdings: 0,
       },
     },
+    deductions: {
+      employmentPensionContributions: 0,
+      tradeUnionMembershipFeesAndUnemploymentFundPayments: 0,
+      commutingExpenses: 0,
+      otherExpensesForTheProductionOfWageIncome: 0,
+      unemploymentInsuranceContributions: 0,
+      yelOrMyelPensionInsuranceContributions: 0,
+      interestOnLoanForTheProductionOfIncome: 0,
+      contributionsForVoluntaryPensionInsuranceOrLongTermSavingsContract: 0,
+      otherExpensesForProductionOfCapitalIncome: 0,
+    },
   });
+
+  console.log(result);
 })();

@@ -9,12 +9,19 @@ export default class Input {
     if (!element) {
       throw new Error(`Failed to find the input with id ${id}`);
     }
-    return new Input(element);
+    return new Input(page, element);
   }
 
-  private constructor(private readonly element: ElementHandle<Element>) {}
+  private constructor(
+    private readonly page,
+    private readonly element: ElementHandle<Element>,
+  ) {}
 
   async set(val: string) {
     await this.element.type(val);
+  }
+
+  async get() {
+    return this.page.evaluate((el) => el.value, this.element);
   }
 }
