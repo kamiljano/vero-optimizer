@@ -11,3 +11,4 @@
 * model how the dividents add up over time
 * add validation to make sure you don't specify that you pay yourself more
   than the company makes
+* looks like the puppeteer can sometimes fail. Implement retries
