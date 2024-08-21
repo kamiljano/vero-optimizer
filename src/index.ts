@@ -2,7 +2,10 @@ import Calculator from './vero/calculator';
 import cli from './cli';
 import pLimit from 'p-limit';
 import { SingleBar, Presets } from 'cli-progress';
-import { Calculation } from './calculation';
+import { TaxCardCalculation } from './tax-card-calculation';
+import bigBrain from './big-brain';
+
+const BENEFITS = 0; //TODO: that should come from the user input
 
 (async () => {
   const data = await cli();
@@ -11,7 +14,7 @@ import { Calculation } from './calculation';
     'The process will actually open multiple browser instances in the background to fill in the Vero calculator, so please, be patient...',
   );
 
-  const promises: Promise<Calculation>[] = [];
+  const promises: Promise<TaxCardCalculation>[] = [];
   const limit = pLimit(5);
   let progress = 0;
   const bar = new SingleBar({}, Presets.shades_classic);
@@ -25,6 +28,7 @@ import { Calculation } from './calculation';
       limit(async () => {
         const result = {
           salary,
+          benefits: BENEFITS,
           taxes: await new Calculator({
             headless: true,
           }).calculate({
@@ -36,7 +40,7 @@ import { Calculation } from './calculation';
                 withholdings: 0,
               },
               benefits: {
-                estimateForYear: 0,
+                estimateForYear: BENEFITS,
                 incomeReceived: 0,
                 withholdings: 0,
               },
@@ -65,9 +69,12 @@ import { Calculation } from './calculation';
 
   bar.start(promises.length, progress);
 
-  const results = await Promise.all(promises);
-  results.forEach((r) => {
-    console.log(`Salary: ${r.salary}`);
-    console.log(r.taxes);
+  const taxCalculations = await Promise.all(promises);
+
+  const result = bigBrain({
+    taxCalculations,
+    companyMonies: data.companyMonies,
   });
+
+  console.log(result);
 })();

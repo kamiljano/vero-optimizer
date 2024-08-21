@@ -4,6 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "tsx src/index.ts",
     "test": "vitest run .",
     "build": "tsc"
   },

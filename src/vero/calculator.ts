@@ -2,7 +2,7 @@ import puppeteer, { Page } from 'puppeteer';
 import BackgroundPage, { Parish, STARTING_PAGE_URL } from './background-page';
 import IncomePage from './income-page';
 import DeductionsPage from './deductions-page';
-import CalculationResult from './calculation-result';
+import TaxCard from './tax-card';
 
 export interface Background {
   taxYear: number;
@@ -112,7 +112,7 @@ export default class Calculator {
     return page.next();
   }
 
-  async calculate(calculation: Calculation): Promise<CalculationResult> {
+  async calculate(calculation: Calculation): Promise<TaxCard> {
     const browser = await puppeteer.launch({ headless: this.props.headless });
 
     try {

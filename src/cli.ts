@@ -77,6 +77,34 @@ const getSalaryRange = async (args: {
   };
 };
 
+export interface CompanyMonies {
+  companyRevenue: number;
+  companyAssets: number;
+}
+
+const getCompanyMonies = async (args: {
+  companyRevenue?: number;
+  currentCompanyAssets?: number;
+}): Promise<CompanyMonies> => {
+  let companyRevenue = args.companyRevenue;
+  let companyAssets = args.currentCompanyAssets;
+
+  if (!companyRevenue) {
+    companyRevenue = await inputInt(
+      'Total revenue of your OY company by the end of the year',
+    );
+  }
+
+  if (!companyAssets) {
+    companyAssets = await inputInt('Total current assets of your OY company');
+  }
+
+  return {
+    companyRevenue,
+    companyAssets,
+  };
+};
+
 export default async function cli() {
   const info = await BackgroundPage.getInfo();
 
@@ -104,7 +132,13 @@ export default async function cli() {
       companyRevenue: {
         type: 'number',
         alias: 'r',
-        description: 'The total revenue of your OY company',
+        description:
+          'The total revenue of your OY company by the end of the year',
+      },
+      currentCompanyAssets: {
+        type: 'number',
+        alias: 'a',
+        description: 'The total current assets of your OY company',
       },
     })
     .check((args) => {
@@ -125,6 +159,7 @@ export default async function cli() {
   const background = await getBackground(info, args);
 
   const salaryRange = await getSalaryRange(args);
+  const companyMonies = await getCompanyMonies(args);
 
-  return { background, salaryRange };
+  return { background, salaryRange, companyMonies };
 }

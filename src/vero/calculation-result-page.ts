@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import CalculationResult from './calculation-result';
+import TaxCard from './tax-card';
 import Input from './input';
 
 export default class CalculationResultPage {
@@ -25,7 +25,7 @@ export default class CalculationResultPage {
     return this.getNumber('Dn-gj');
   }
 
-  async getCalculationResult(): Promise<CalculationResult> {
+  async getCalculationResult(): Promise<TaxCard> {
     const [taxRate, additionalWithholdingRate] = await Promise.all([
       this.getTaxRate(),
       this.getAdditionalWithholdingRate(),

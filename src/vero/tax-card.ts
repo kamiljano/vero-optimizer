@@ -1,4 +1,4 @@
-export default interface CalculationResult {
+export default interface TaxCard {
   taxRate: number;
   additionalWithholdingRate: number;
 }
