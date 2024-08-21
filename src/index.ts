@@ -90,4 +90,5 @@ const BENEFITS = 0; //TODO: that should come from the user input
   });
 
   console.log(result);
+  process.exit(0);
 })();
