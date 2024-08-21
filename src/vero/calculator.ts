@@ -1,11 +1,10 @@
 import puppeteer, { Page } from 'puppeteer';
-import BackgroundPage, { Parish } from './background-page';
-import { setTimeout } from 'node:timers/promises';
+import BackgroundPage, { Parish, STARTING_PAGE_URL } from './background-page';
 import IncomePage from './income-page';
 import DeductionsPage from './deductions-page';
 import CalculationResult from './calculation-result';
 
-interface Background {
+export interface Background {
   taxYear: number;
   municipality: string;
   parish: Parish;
@@ -118,9 +117,7 @@ export default class Calculator {
 
     try {
       const page = await browser.newPage();
-      await page.goto(
-        'https://avoinomavero.vero.fi/?Language=ENG&Link=IITTaxRateCalc',
-      );
+      await page.goto(STARTING_PAGE_URL);
 
       const incomePage = await this.calculateBackground(
         page,
