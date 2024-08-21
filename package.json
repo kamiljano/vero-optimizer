@@ -7,6 +7,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/cli-progress": "^3.11.6",
     "@types/node": "^22.2.0",
     "@types/yargs": "^17.0.33",
     "prettier": "^3.3.3",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^5.3.8",
+    "cli-progress": "^3.12.0",
     "p-limit": "^6.1.0",
     "puppeteer": "^23.0.2",
     "yargs": "^17.7.2"

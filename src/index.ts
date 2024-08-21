@@ -2,6 +2,7 @@ import Calculator from './vero/calculator';
 import cli from './cli';
 import CalculationResult from './vero/calculation-result';
 import pLimit from 'p-limit';
+import { SingleBar, Presets } from 'cli-progress';
 
 interface Calculation {
   result: CalculationResult;
@@ -17,6 +18,8 @@ interface Calculation {
 
   const promises: Promise<Calculation>[] = [];
   const limit = pLimit(5);
+  let progress = 0;
+  const bar = new SingleBar({}, Presets.shades_classic);
 
   for (
     let salary = data.salaryRange.min;
@@ -25,7 +28,7 @@ interface Calculation {
   ) {
     promises.push(
       limit(async () => {
-        return {
+        const result = {
           salary,
           result: await new Calculator({
             headless: true,
@@ -56,9 +59,16 @@ interface Calculation {
             },
           }),
         };
+
+        progress++;
+        bar.update(progress);
+
+        return result;
       }),
     );
   }
+
+  bar.start(promises.length, progress);
 
   const results = await Promise.all(promises);
   results.forEach((r) => {
