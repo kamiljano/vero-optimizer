@@ -8,7 +8,6 @@
 * finish the remaining inputs
 * make it possible to run this for the remainder of the year, rather than the whole year
 * visualizations in html
-* cache for the slow browser calculations
 * model how the dividents add up over time
 * add validation to make sure you don't specify that you pay yourself more
   than the company makes

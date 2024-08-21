@@ -1,9 +1,9 @@
 import BackgroundPage from './vero/background-page';
-import { Background } from './vero/calculator';
 import { input, select } from '@inquirer/prompts';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import pkg from '../package.json';
+import { Background } from './vero/calculation';
 
 const getBackground = async (
   info: Awaited<ReturnType<typeof BackgroundPage.getInfo>>,
@@ -89,13 +89,13 @@ const getCompanyMonies = async (args: {
   let companyRevenue = args.companyRevenue;
   let companyAssets = args.currentCompanyAssets;
 
-  if (!companyRevenue) {
+  if (typeof companyRevenue === 'undefined') {
     companyRevenue = await inputInt(
       'Total revenue of your OY company by the end of the year',
     );
   }
 
-  if (!companyAssets) {
+  if (typeof companyAssets === 'undefined') {
     companyAssets = await inputInt('Total current assets of your OY company');
   }
 

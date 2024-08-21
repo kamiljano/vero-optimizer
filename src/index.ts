@@ -4,6 +4,8 @@ import pLimit from 'p-limit';
 import { SingleBar, Presets } from 'cli-progress';
 import { TaxCardCalculation } from './tax-card-calculation';
 import bigBrain from './big-brain';
+import TaxCardCache from './tax-card-cache';
+import { Calculation } from './vero/calculation';
 
 const BENEFITS = 0; //TODO: that should come from the user input
 
@@ -18,6 +20,7 @@ const BENEFITS = 0; //TODO: that should come from the user input
   const limit = pLimit(5);
   let progress = 0;
   const bar = new SingleBar({}, Presets.shades_classic);
+  const cache = new TaxCardCache();
 
   for (
     let salary = data.salaryRange.min;
@@ -26,38 +29,48 @@ const BENEFITS = 0; //TODO: that should come from the user input
   ) {
     promises.push(
       limit(async () => {
+        const calculation: Calculation = {
+          background: data.background,
+          income: {
+            pay: {
+              estimateForYear: salary,
+              incomeReceived: 0,
+              withholdings: 0,
+            },
+            benefits: {
+              estimateForYear: BENEFITS,
+              incomeReceived: 0,
+              withholdings: 0,
+            },
+          },
+          deductions: {
+            employmentPensionContributions: 0,
+            tradeUnionMembershipFeesAndUnemploymentFundPayments: 0,
+            commutingExpenses: 0,
+            otherExpensesForTheProductionOfWageIncome: 0,
+            unemploymentInsuranceContributions: 0,
+            yelOrMyelPensionInsuranceContributions: 0,
+            interestOnLoanForTheProductionOfIncome: 0,
+            contributionsForVoluntaryPensionInsuranceOrLongTermSavingsContract: 0,
+            otherExpensesForProductionOfCapitalIncome: 0,
+          },
+        };
+
+        const cached = cache.get(calculation);
+
         const result = {
           salary,
           benefits: BENEFITS,
-          taxes: await new Calculator({
-            headless: true,
-          }).calculate({
-            background: data.background,
-            income: {
-              pay: {
-                estimateForYear: salary,
-                incomeReceived: 0,
-                withholdings: 0,
-              },
-              benefits: {
-                estimateForYear: BENEFITS,
-                incomeReceived: 0,
-                withholdings: 0,
-              },
-            },
-            deductions: {
-              employmentPensionContributions: 0,
-              tradeUnionMembershipFeesAndUnemploymentFundPayments: 0,
-              commutingExpenses: 0,
-              otherExpensesForTheProductionOfWageIncome: 0,
-              unemploymentInsuranceContributions: 0,
-              yelOrMyelPensionInsuranceContributions: 0,
-              interestOnLoanForTheProductionOfIncome: 0,
-              contributionsForVoluntaryPensionInsuranceOrLongTermSavingsContract: 0,
-              otherExpensesForProductionOfCapitalIncome: 0,
-            },
-          }),
+          taxes:
+            cached ??
+            (await new Calculator({
+              headless: true,
+            }).calculate(calculation)),
         };
+
+        if (!cached) {
+          cache.set(calculation, result.taxes);
+        }
 
         progress++;
         bar.update(progress);

@@ -3,50 +3,7 @@ import BackgroundPage, { Parish, STARTING_PAGE_URL } from './background-page';
 import IncomePage from './income-page';
 import DeductionsPage from './deductions-page';
 import TaxCard from './tax-card';
-
-export interface Background {
-  taxYear: number;
-  municipality: string;
-  parish: Parish;
-  yearOfBirth: number;
-  spouse: boolean;
-
-  //todo: number of children
-  //todo: insurance outside of finland
-}
-
-interface IncomeEstimate {
-  estimateForYear: number;
-  incomeReceived: number;
-  withholdings: number;
-}
-
-interface Income {
-  pay: IncomeEstimate;
-  benefits: IncomeEstimate;
-
-  //todo: the rest
-}
-
-interface Deductions {
-  employmentPensionContributions: number;
-  tradeUnionMembershipFeesAndUnemploymentFundPayments: number;
-  commutingExpenses: number;
-  otherExpensesForTheProductionOfWageIncome: number;
-  unemploymentInsuranceContributions: number;
-  yelOrMyelPensionInsuranceContributions: number;
-  interestOnLoanForTheProductionOfIncome: number;
-  contributionsForVoluntaryPensionInsuranceOrLongTermSavingsContract: number;
-  otherExpensesForProductionOfCapitalIncome: number;
-
-  //todo: the rest
-}
-
-interface Calculation {
-  background: Background;
-  income: Income;
-  deductions: Deductions;
-}
+import { Background, Calculation, Deductions, Income } from './calculation';
 
 interface CalculatorProps {
   headless: boolean;
