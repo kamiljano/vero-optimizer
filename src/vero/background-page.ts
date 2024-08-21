@@ -21,7 +21,7 @@ export default class BackgroundPage {
       await page.waitForSelector('.FGFCBW label', { timeout: 5000 });
 
       const taxYears = await page.$$eval('.FGFCBW label', (labels) =>
-        labels.map((label) => parseInt(label.textContent.trim(), 10)),
+        labels.map((label) => parseInt(label.textContent!.trim(), 10)),
       );
 
       return { taxYears };
@@ -44,7 +44,7 @@ export default class BackgroundPage {
       yearRadios.map(async (radio) => {
         return {
           year: await this.page.evaluate(
-            (el) => parseInt(el.textContent.trim(), 10),
+            (el) => parseInt(el.textContent!.trim(), 10),
             radio,
           ),
           select() {

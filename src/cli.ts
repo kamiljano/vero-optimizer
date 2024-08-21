@@ -3,6 +3,7 @@ import { Background } from './vero/calculator';
 import { input, select } from '@inquirer/prompts';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import pkg from '../package.json';
 
 const getBackground = async (
   info: Awaited<ReturnType<typeof BackgroundPage.getInfo>>,
@@ -80,6 +81,7 @@ export default async function cli() {
   const info = await BackgroundPage.getInfo();
 
   const args = await yargs(hideBin(process.argv))
+    .version(pkg.version)
     .options({
       taxYear: {
         type: 'number',
@@ -98,6 +100,11 @@ export default async function cli() {
         alias: 'x',
         description:
           "The maximum salary that you're willing to pay yourself in a year",
+      },
+      companyRevenue: {
+        type: 'number',
+        alias: 'r',
+        description: 'The total revenue of your OY company',
       },
     })
     .check((args) => {

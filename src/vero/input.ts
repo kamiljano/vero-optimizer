@@ -13,7 +13,7 @@ export default class Input {
   }
 
   private constructor(
-    private readonly page,
+    private readonly page: Page,
     private readonly element: ElementHandle<Element>,
   ) {}
 
@@ -22,6 +22,7 @@ export default class Input {
   }
 
   async get() {
+    // @ts-ignore
     return this.page.evaluate((el) => el.value, this.element);
   }
 }

@@ -1,13 +1,8 @@
 import Calculator from './vero/calculator';
 import cli from './cli';
-import CalculationResult from './vero/calculation-result';
 import pLimit from 'p-limit';
 import { SingleBar, Presets } from 'cli-progress';
-
-interface Calculation {
-  result: CalculationResult;
-  salary: number;
-}
+import { Calculation } from './calculation';
 
 (async () => {
   const data = await cli();
@@ -30,7 +25,7 @@ interface Calculation {
       limit(async () => {
         const result = {
           salary,
-          result: await new Calculator({
+          taxes: await new Calculator({
             headless: true,
           }).calculate({
             background: data.background,
@@ -73,6 +68,6 @@ interface Calculation {
   const results = await Promise.all(promises);
   results.forEach((r) => {
     console.log(`Salary: ${r.salary}`);
-    console.log(r.result);
+    console.log(r.taxes);
   });
 })();

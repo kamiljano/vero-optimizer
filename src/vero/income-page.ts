@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
-import Input from './input';
-import DeductionsPage from './deductions-page';
+import Input from './input.js';
+import DeductionsPage from './deductions-page.js';
 
 export default class IncomePage {
   constructor(private readonly page: Page) {}
