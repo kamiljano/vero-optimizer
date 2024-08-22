@@ -59,8 +59,8 @@ const BENEFITS = 0; //TODO: that should come from the user input
         const cached = cache.get(calculation);
 
         const result = {
-          salary,
-          benefits: BENEFITS,
+          annualSalary: salary,
+          annualBenefits: BENEFITS,
           taxes:
             cached ??
             (await new Calculator({
@@ -90,6 +90,6 @@ const BENEFITS = 0; //TODO: that should come from the user input
   });
 
   process.stdout.write('\n\n');
-  console.log(result);
+  console.log(JSON.stringify(result, null, 2));
   process.exit(0);
 })();

@@ -11,19 +11,19 @@ interface BigBrainProps {
 }
 
 const getTotalCompanyMonies = (
-  calc: Pick<TaxCardCalculation, 'salary' | 'benefits'>,
+  calc: Pick<TaxCardCalculation, 'annualSalary' | 'annualBenefits'>,
   companyMonies: CompanyMonies,
 ) => {
   return (
     companyMonies.companyAssets + // todo add general company spending on software, hardware and shit
     companyMonies.companyRevenue -
-    calc.benefits -
-    calc.salary
+    calc.annualBenefits -
+    calc.annualSalary
   );
 };
 
 export const calculateDividents = (
-  calc: Pick<TaxCardCalculation, 'salary' | 'benefits'>,
+  calc: Pick<TaxCardCalculation, 'annualSalary' | 'annualBenefits'>,
   companyMonies: CompanyMonies,
 ): number => {
   const companyMoneyLeftAtTheEndOfTheYear = getTotalCompanyMonies(
@@ -41,8 +41,8 @@ export const calculateDividents = (
 };
 
 const getGrossSalary = (calc: TaxCardCalculation) => {
-  const toPayInTaxes = (calc.salary / 100) * calc.taxes.taxRate;
-  return calc.salary - toPayInTaxes;
+  const toPayInTaxes = (calc.annualSalary / 100) * calc.taxes.taxRate;
+  return calc.annualSalary - toPayInTaxes;
 };
 
 const getCorporateAccountAfterExpensesAndTaxes = (
@@ -58,16 +58,26 @@ const calculateTotalIncome = (
   calc: TaxCardCalculation,
   companyMonies: CompanyMonies,
 ) => {
-  const dividents = calculateDividents(calc, companyMonies);
+  const dividentsAfterTaxes = calculateDividents(calc, companyMonies);
   const annualSalaryAfterTaxes = getGrossSalary(calc);
   return {
-    totalAnnualIncomeAfterTaxes: dividents + annualSalaryAfterTaxes,
-    dividents,
-    annualSalaryAfterTaxes,
-    monthlySalaryAfterTaxes: annualSalaryAfterTaxes / 12,
-    monthlySalaryBeforeTaxes: calc.salary / 12,
-    annualCorporateAccountAfterExpensesAndTaxes:
-      getCorporateAccountAfterExpensesAndTaxes(calc, companyMonies),
+    income: {
+      private: {
+        annual: {
+          totalAfterTaxes: dividentsAfterTaxes + annualSalaryAfterTaxes,
+          dividentsAfterTaxes,
+          salaryAfterTaxes: annualSalaryAfterTaxes,
+        },
+        monthly: {
+          salaryAfterTaxes: annualSalaryAfterTaxes / 12,
+          salaryBeforeTaxes: calc.annualSalary / 12,
+        },
+      },
+      corporate: {
+        annualCorporateAccountAfterExpensesAndTaxes:
+          getCorporateAccountAfterExpensesAndTaxes(calc, companyMonies),
+      },
+    },
   };
 };
 
@@ -85,8 +95,8 @@ export default function bigBrain({
     const income = calculateTotalIncome(calc, companyMonies);
     if (
       !bestCalculation ||
-      bestCalculation.totalAnnualIncomeAfterTaxes <
-        income.totalAnnualIncomeAfterTaxes
+      bestCalculation.income.private.annual.totalAfterTaxes <
+        income.income.private.annual.totalAfterTaxes
     ) {
       bestCalculation = {
         taxCard: calc,

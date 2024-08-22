@@ -4,8 +4,8 @@ import bigBrain, { calculateDividents } from './big-brain';
 test('calculateDividents', () => {
   const divident = calculateDividents(
     {
-      salary: 0,
-      benefits: 0,
+      annualSalary: 0,
+      annualBenefits: 0,
     },
     {
       companyRevenue: 0,
@@ -19,30 +19,45 @@ test('calculateDividents', () => {
 test('bigBrain', () => {
   const result = bigBrain({
     companyMonies: {
-      companyRevenue: 100000,
-      companyAssets: 10000,
+      companyRevenue: 100_000,
+      companyAssets: 100_000,
     },
     taxCalculations: [
       {
-        salary: 10000,
-        benefits: 0,
+        annualSalary: 100_000,
+        annualBenefits: 0,
         taxes: {
           taxRate: 10,
-          additionalWithholdingRate: 5,
+          additionalWithholdingRate: 50,
         },
       },
     ],
   });
 
   expect(result).toEqual({
-    calculation: {
-      salary: 10000,
-      benefits: 0,
+    taxCard: {
+      annualSalary: 100000,
+      annualBenefits: 0,
       taxes: {
         taxRate: 10,
-        additionalWithholdingRate: 5,
+        additionalWithholdingRate: 50,
       },
     },
-    totalIncome: 16400,
+    income: {
+      private: {
+        annual: {
+          totalAfterTaxes: 97400,
+          dividentsAfterTaxes: 7400,
+          salaryAfterTaxes: 90000,
+        },
+        monthly: {
+          salaryAfterTaxes: 7500,
+          salaryBeforeTaxes: 8333.333333333334,
+        },
+      },
+      corporate: {
+        annualCorporateAccountAfterExpensesAndTaxes: 92000,
+      },
+    },
   });
 });
