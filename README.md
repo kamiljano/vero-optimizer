@@ -32,3 +32,7 @@ TODO
 * model how the dividents add up over time
 * add validation to make sure you don't specify that you pay yourself more
   than the company makes
+* the cars are calculated in a magical way. Add that to the calculation
+* add YEL insurance to the calculation
+* add the corporate tax to the calculation
+* state how much money is left in the corporate account
