@@ -10,15 +10,26 @@ interface BigBrainProps {
   companyMonies: CompanyMonies;
 }
 
+const getTotalCompanyMonies = (
+  calc: Pick<TaxCardCalculation, 'salary' | 'benefits'>,
+  companyMonies: CompanyMonies,
+) => {
+  return (
+    companyMonies.companyAssets + // todo add general company spending on software, hardware and shit
+    companyMonies.companyRevenue -
+    calc.benefits -
+    calc.salary
+  );
+};
+
 export const calculateDividents = (
   calc: Pick<TaxCardCalculation, 'salary' | 'benefits'>,
   companyMonies: CompanyMonies,
 ): number => {
-  const companyMoneyLeftAtTheEndOfTheYear =
-    companyMonies.companyAssets +
-    companyMonies.companyRevenue -
-    calc.benefits -
-    calc.salary;
+  const companyMoneyLeftAtTheEndOfTheYear = getTotalCompanyMonies(
+    calc,
+    companyMonies,
+  );
 
   const dividentPayout =
     (companyMoneyLeftAtTheEndOfTheYear / 100) * PERCENTAGE_FOR_DIVIDENTS;
@@ -34,6 +45,15 @@ const getGrossSalary = (calc: TaxCardCalculation) => {
   return calc.salary - toPayInTaxes;
 };
 
+const getCorporateAccountAfterExpensesAndTaxes = (
+  calc: TaxCardCalculation,
+  companyMonies: CompanyMonies,
+): number => {
+  const totalMonies = getTotalCompanyMonies(calc, companyMonies);
+  const dividents = (totalMonies / 100) * PERCENTAGE_FOR_DIVIDENTS;
+  return totalMonies - dividents;
+};
+
 const calculateTotalIncome = (
   calc: TaxCardCalculation,
   companyMonies: CompanyMonies,
@@ -46,6 +66,8 @@ const calculateTotalIncome = (
     annualSalaryAfterTaxes,
     monthlySalaryAfterTaxes: annualSalaryAfterTaxes / 12,
     monthlySalaryBeforeTaxes: calc.salary / 12,
+    annualCorporateAccountAfterExpensesAndTaxes:
+      getCorporateAccountAfterExpensesAndTaxes(calc, companyMonies),
   };
 };
 
