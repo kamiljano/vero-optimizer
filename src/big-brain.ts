@@ -37,10 +37,16 @@ const getGrossSalary = (calc: TaxCardCalculation) => {
 const calculateTotalIncome = (
   calc: TaxCardCalculation,
   companyMonies: CompanyMonies,
-): number => {
+) => {
   const dividents = calculateDividents(calc, companyMonies);
-  const grossSalary = getGrossSalary(calc);
-  return dividents + grossSalary;
+  const annualSalaryAfterTaxes = getGrossSalary(calc);
+  return {
+    totalAnnualIncomeAfterTaxes: dividents + annualSalaryAfterTaxes,
+    dividents,
+    annualSalaryAfterTaxes,
+    monthlySalaryAfterTaxes: annualSalaryAfterTaxes / 12,
+    monthlySalaryBeforeTaxes: calc.salary / 12,
+  };
 };
 
 export default function bigBrain({
@@ -48,18 +54,21 @@ export default function bigBrain({
   companyMonies,
 }: BigBrainProps) {
   let bestCalculation:
-    | {
-        calculation: TaxCardCalculation;
-        totalIncome: number;
-      }
+    | ({
+        taxCard: TaxCardCalculation;
+      } & ReturnType<typeof calculateTotalIncome>)
     | undefined = undefined;
 
   for (let calc of taxCalculations) {
-    const totalIncome = calculateTotalIncome(calc, companyMonies);
-    if (!bestCalculation || bestCalculation.totalIncome < totalIncome) {
+    const income = calculateTotalIncome(calc, companyMonies);
+    if (
+      !bestCalculation ||
+      bestCalculation.totalAnnualIncomeAfterTaxes <
+        income.totalAnnualIncomeAfterTaxes
+    ) {
       bestCalculation = {
-        calculation: calc,
-        totalIncome,
+        taxCard: calc,
+        ...income,
       };
     }
   }
