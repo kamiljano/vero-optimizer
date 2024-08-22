@@ -7,7 +7,7 @@ import bigBrain from './big-brain';
 import TaxCardCache from './tax-card-cache';
 import { Calculation } from './vero/calculation';
 
-const BENEFITS = 0; //TODO: that should come from the user input
+const BENEFITS = 840 * 12; //TODO: that should come from the user input
 
 (async () => {
   const data = await cli();

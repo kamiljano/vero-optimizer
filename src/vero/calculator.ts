@@ -1,9 +1,10 @@
 import puppeteer, { Page } from 'puppeteer';
-import BackgroundPage, { Parish, STARTING_PAGE_URL } from './background-page';
+import BackgroundPage, { STARTING_PAGE_URL } from './background-page';
 import IncomePage from './income-page';
 import DeductionsPage from './deductions-page';
 import TaxCard from './tax-card';
 import { Background, Calculation, Deductions, Income } from './calculation';
+import { setTimeout } from 'node:timers/promises';
 
 interface CalculatorProps {
   headless: boolean;
@@ -69,7 +70,7 @@ export default class Calculator {
     return page.next();
   }
 
-  async calculate(calculation: Calculation): Promise<TaxCard> {
+  private async runCalculation(calculation: Calculation): Promise<TaxCard> {
     const browser = await puppeteer.launch({ headless: this.props.headless });
 
     try {
@@ -95,5 +96,21 @@ export default class Calculator {
     } finally {
       await browser.close();
     }
+  }
+
+  async calculate(calculation: Calculation): Promise<TaxCard> {
+    const maxAttempts = 3;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        return await this.runCalculation(calculation);
+      } catch (err) {
+        if (attempt === maxAttempts - 1) {
+          throw err;
+        }
+        await setTimeout(3000);
+      }
+    }
+
+    throw new Error('Unexpected error');
   }
 }
